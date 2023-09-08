@@ -26,27 +26,37 @@ jobs:
       # - name: List containers
       #   run: aws lightsail get-container-images --region eu-central-1 --service-name meme-api --output text
 
-      # - name: build
-      #   run: |
-      #     docker build -t=meme-api ./server
-
-      - name: Clear Container Images
-        shell: bash
+      - name: build
         run: |
-          AWS_IMAGES=$(aws lightsail get-container-images --region eu-central-1 --service-name meme-api --output text)
-          IMAGE_NAMES=$(echo $AWS_IMAGES | grep -Eo ':meme-api\.meme-api-2\.[0-9]+')
-          echo $IMAGE_NAMES
-          FIRST=0
-          while read LINE; do
-            if [ "$FIRST" -ne 0 ]; then
-              aws lightsail delete-container-image --region eu-central-1 --service-name meme-api --image $LINE;
-            fi
-          FIRST=1;
-          done <<< $IMAGE_NAMES
+          docker build -t=meme-api ./server
 
-      # - name: Publish image to AWS Lightsail
+      # - name: Clear Container Images
       #   shell: bash
-      #   run: aws lightsail push-container-image --region eu-central-1 --service-name meme-api --label meme-api-2 --image meme-api
+      #   run: |
+      #     AWS_IMAGES=$(aws lightsail get-container-images --region eu-central-1 --service-name meme-api --output text)
+      #     IMAGE_NAMES=$(echo $AWS_IMAGES | grep -Eo ':meme-api\.meme-api-2\.[0-9]+')
+      #     echo $IMAGE_NAMES
+      #     FIRST=0
+      #     while read LINE; do
+      #       if [ "$FIRST" -ne 0 ]; then
+      #         aws lightsail delete-container-image --region eu-central-1 --service-name meme-api --image $LINE;
+      #       fi
+      #     FIRST=1;
+      #     done <<< $IMAGE_NAMES
+
+      - name: Publish image to AWS Lightsail
+        run: aws lightsail push-container-image --region eu-central-1 --service-name meme-api --label meme-api-2 --image meme-api
+
+      - name: Deploy container to AWS Lightsail
+        run: |
+          aws lightsail get-container-images --service-name meme-api | jq --raw-output ".containerImages[0].image" > image.txt
+          jq \
+          --arg image $(cat image.txt) \
+          --arg keyid ${{ secrets.AWS_ACCESS_KEY_ID }} \
+          --arg key ${{ secrets.AWS_SECRET_ACCESS_KEY }} \
+          '.containers."meme-api-2".image = $image | .containers."meme-api-2".environment.AWS_ACCESS_KEY_ID = $keyid | .containers."meme-api-2".environment.AWS_SECRET_ACCESS_KEY = $key' \
+          lightsail-template.json > container.json
+          aws lightsail create-container-service-deployment --cli-input-json file://$(pwd)/container.json
 
       # - name: Deploy container on AWS Lightsail
       #   shell: bash

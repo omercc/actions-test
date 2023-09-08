@@ -1,0 +1,29 @@
+{
+  "version": 7,
+  "state": "ACTIVE",
+  "containers": {
+    "meme-api-2": {
+      "image": "",
+      "command": [],
+      "environment": {
+        "AWS_ACCESS_KEY_ID": "",
+        "AWS_SECRET_ACCESS_KEY": ""
+      },
+      "ports": {
+        "6060": "HTTP"
+      }
+    }
+  },
+  "publicEndpoint": {
+    "containerName": "meme-api-2",
+    "containerPort": 6060,
+    "healthCheck": {
+      "healthyThreshold": 2,
+      "unhealthyThreshold": 2,
+      "timeoutSeconds": 2,
+      "intervalSeconds": 5,
+      "path": "/",
+      "successCodes": "200-499"
+    }
+  }
+}
