@@ -2,11 +2,11 @@
   "serviceName": "meme-api",
   "containers": {
     "meme-api-2": {
-      "image": "",
+      "image": "<will be filled in pipeline>",
       "command": [],
       "environment": {
-        "AWS_ACCESS_KEY_ID": "",
-        "AWS_SECRET_ACCESS_KEY": ""
+        "AWS_ACCESS_KEY_ID": "<will be filled in pipeline>",
+        "AWS_SECRET_ACCESS_KEY": "<will be filled in pipeline>"
       },
       "ports": {
         "6060": "HTTP"
