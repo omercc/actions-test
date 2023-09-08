@@ -23,30 +23,30 @@ jobs:
           sudo curl "https://s3.us-west-2.amazonaws.com/lightsailctl/latest/linux-amd64/lightsailctl" -o "/usr/local/bin/lightsailctl"
           sudo chmod +x /usr/local/bin/lightsailctl
 
-      - name: List containers
-        run: aws lightsail get-container-images --region eu-central-1 --service-name meme-api --output text
+      # - name: List containers
+      #   run: aws lightsail get-container-images --region eu-central-1 --service-name meme-api --output text
 
-      - name: build
-        run: |
-          docker build -t=meme-api ./server
-
-      # - name: Clear Container Images
-      #   shell: bash
+      # - name: build
       #   run: |
-      #     AWS_IMAGES=$(aws lightsail get-container-images --region eu-central-1 --service-name meme-api --output text)
-      #     IMAGE_NAMES=$(echo $AWS_IMAGES | grep -Eo ':meme-api\.meme-api-2\.[0-9]+')
-      #     echo $IMAGE_NAMES
-      #     FIRST=0
-      #     while read LINE; do
-      #       if [ "$FIRST" -ne 0 ]; then
-      #         aws lightsail delete-container-image --region eu-central-1 --service-name meme-api --image $LINE;
-      #       fi
-      #     FIRST=1;
-      #     done <<< $IMAGE_NAMES
+      #     docker build -t=meme-api ./server
 
-      - name: Publish image to AWS Lightsail
+      - name: Clear Container Images
         shell: bash
-        run: aws lightsail push-container-image --region eu-central-1 --service-name meme-api --label meme-api-2 --image meme-api
+        run: |
+          AWS_IMAGES=$(aws lightsail get-container-images --region eu-central-1 --service-name meme-api --output text)
+          IMAGE_NAMES=$(echo $AWS_IMAGES | grep -Eo ':meme-api\.meme-api-2\.[0-9]+')
+          echo $IMAGE_NAMES
+          FIRST=0
+          while read LINE; do
+            if [ "$FIRST" -ne 0 ]; then
+              aws lightsail delete-container-image --region eu-central-1 --service-name meme-api --image $LINE;
+            fi
+          FIRST=1;
+          done <<< $IMAGE_NAMES
+
+      # - name: Publish image to AWS Lightsail
+      #   shell: bash
+      #   run: aws lightsail push-container-image --region eu-central-1 --service-name meme-api --label meme-api-2 --image meme-api
 
       # - name: Deploy container on AWS Lightsail
       #   shell: bash
