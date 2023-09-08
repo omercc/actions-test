@@ -1,6 +1,5 @@
 {
-  "version": 7,
-  "state": "ACTIVE",
+  "serviceName": "meme-api",
   "containers": {
     "meme-api-2": {
       "image": "",
