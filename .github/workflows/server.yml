@@ -28,7 +28,7 @@ jobs:
 
       - name: build
         run: |
-          docker build -t=meme-api .
+          docker build -t=meme-api ./server
 
       # - name: Clear Container Images
       #   shell: bash
