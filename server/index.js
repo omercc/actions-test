@@ -18,6 +18,7 @@ app.use(express.json())
 app.use(cors())
 
 app.use('/upload', uploadRouter)
+
 app.use('/play', playRouter)
 app.use('/bucket', bucketRouter)
 
